@@ -1,0 +1,66 @@
+package com.example.quizapp
+
+import android.os.Bundle
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var questionTextView: TextView
+    private lateinit var answersRadioGroup: RadioGroup
+    private lateinit var submitAnswerButton: Button
+
+    private val questions = listOf(
+        "What is the capital of France?" to listOf("Paris", "London", "Berlin", "Madrid"),
+        "What is 2 + 2?" to listOf("3", "4", "5", "6"),
+        "What is the largest planet?" to listOf("Earth", "Mars", "Jupiter", "Saturn")
+    )
+    
+    private val correctAnswers = listOf(0, 1, 2) // Indexes of correct answers
+
+    private var currentQuestionIndex = 0
+    private var score = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        questionTextView = findViewById(R.id.questionTextView)
+        answersRadioGroup = findViewById(R.id.answersRadioGroup)
+        submitAnswerButton = findViewById(R.id.submitAnswerButton)
+
+        loadQuestion()
+
+        submitAnswerButton.setOnClickListener {
+            val selectedOption = answersRadioGroup.checkedRadioButtonId
+            val selectedIndex = when (selectedOption) {
+                R.id.answer1RadioButton -> 0
+                R.id.answer2RadioButton -> 1
+                R.id.answer3RadioButton -> 2
+                R.id.answer4RadioButton -> 3
+                else -> -1
+            }
+            
+            if (selectedIndex == correctAnswers[currentQuestionIndex]) {
+                score++
+            }
+
+            if (currentQuestionIndex < questions.size - 1) {
+                currentQuestionIndex++
+                loadQuestion()
+            } else {
+                Toast.makeText(this, "Quiz completed! Score: $score/${questions.size}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun loadQuestion() {
+        val (question, answers) = questions[currentQuestionIndex]
+        questionTextView.text = question
+        answersRadioGroup.clearCheck()
+        (answersRadioGroup.getChildAt(0) as RadioButton).text = answers[0]
+        (answersRadioGroup.getChildAt(1) as RadioButton).text = answers[1]
+        (answersRadioGroup.getChildAt(2) as RadioButton).text = answers[2]
+        (answersRadioGroup.getChildAt(3) as RadioButton).text = answers[3]
+    }
+}
